@@ -15,7 +15,7 @@ const mapContainerStyle = {
   width: '100vh',
 }
 
-function getNearFood(lat, lng) {
+async function getNearFood(lat, lng) {
   try {
     if (
       document.getElementById('map') == null ||
@@ -27,7 +27,7 @@ function getNearFood(lat, lng) {
       parseFloat(lat.toString()),
       parseFloat(lng.toString())
     )
-    console.log('pyrmont' + pyrmont)
+
     const Map = new google.maps.Map(document?.getElementById('map'), {
       center: pyrmont,
       zoom: 18,
@@ -39,10 +39,38 @@ function getNearFood(lat, lng) {
       type: 'restaurant',
       keyword: '居酒屋', // 検索地点の付近を`keyword`を使って検索する
     }
+
     var service = new google.maps.places.PlacesService(Map)
-    service.nearbySearch(request, (res) => {
-      console.log(res)
+
+    // let result = []
+    // let stat
+
+    return service.nearbySearch(request, (res, status) => {
+      if (status != 'OK' && status != 'ZERO_RESULTS') {
+        console.log(lat, lng)
+        throw new Error(`status not OK ${status}`)
+      }
+
+      console.log(lat, lng)
+      console.log(status)
+      console.log('res = ' + res)
+
+      // stat = status
+      // result = res
+      // console.log('stat = ' + stat)
+      // console.log('result = ' + result)
+      // res.map((item) => {
+      //   console.log(item)
+      //   result.push({ name: item.name, place_id: item.place_id })
+      // })
+
+      // return res, status
     })
+
+    // console.log('before return getNearFood')
+    // console.log(result)
+    // console.log(stat)
+    // return result
   } catch (error) {
     alert('検索処理でエラーが発生しました！')
     throw error
@@ -52,6 +80,8 @@ function getNearFood(lat, lng) {
 function App() {
   const [latitude, setLatitude] = useState(100)
   const [longitude, setLongitude] = useState(100)
+
+  // const [nearRest, setNearRest] = useState([])
 
   const mapRef = useRef()
   const onMapLoad = useCallback((map) => {
@@ -77,7 +107,6 @@ function App() {
         }
       )
     } else {
-      // Browser doesn't support Geolocation
       handleLocationError(false, infoWindow, map.getCenter())
     }
   }, [])
@@ -86,7 +115,14 @@ function App() {
     const func = async () => {
       // TODO : ここで map id 要素が null でなくなるのを待つ.
       setTimeout(() => {
+        console.log('In App Components')
+
         getNearFood(latitude, longitude)
+
+        // console.log(status)
+        //if (status == 'OK') {
+        // console.log(result)
+        //}
       }, 1000)
     }
 

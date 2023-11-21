@@ -8,10 +8,45 @@ import './App.css'
 import React, { useCallback, useRef } from 'react'
 import { GoogleMap, useLoadScript, MarkerF } from '@react-google-maps/api'
 
+// TODO : Performance warning
 const libraries = ['places']
 const mapContainerStyle = {
   height: '100vh',
   width: '100vh',
+}
+
+function getNearFood(lat, lng) {
+  try {
+    if (
+      document.getElementById('map') == null ||
+      typeof document.getElementById('map') == null
+    ) {
+      return
+    }
+    var pyrmont = new google.maps.LatLng(
+      parseFloat(lat.toString()),
+      parseFloat(lng.toString())
+    )
+    console.log('pyrmont' + pyrmont)
+    const Map = new google.maps.Map(document?.getElementById('map'), {
+      center: pyrmont,
+      zoom: 18,
+    })
+
+    var request = {
+      location: pyrmont,
+      radius: 500,
+      type: 'restaurant',
+      keyword: '居酒屋', // 検索地点の付近を`keyword`を使って検索する
+    }
+    var service = new google.maps.places.PlacesService(Map)
+    service.nearbySearch(request, (res) => {
+      console.log(res)
+    })
+  } catch (error) {
+    alert('検索処理でエラーが発生しました！')
+    throw error
+  }
 }
 
 function App() {
@@ -31,7 +66,6 @@ function App() {
   })
 
   useLayoutEffect(() => {
-    let pos = { lat: 0, lng: 0 }
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -47,6 +81,17 @@ function App() {
       handleLocationError(false, infoWindow, map.getCenter())
     }
   }, [])
+
+  useEffect(() => {
+    const func = async () => {
+      // TODO : ここで map id 要素が null でなくなるのを待つ.
+      setTimeout(() => {
+        getNearFood(latitude, longitude)
+      }, 1000)
+    }
+
+    func()
+  }, [latitude])
 
   if (loadError) return <div>Error</div>
   if (!isLoaded) return <div>Loading</div>

@@ -6,7 +6,7 @@ import './App.css'
 // import getCurrentPosition from './api/googleMapApi'
 
 import React, { useCallback, useRef } from 'react'
-import { GoogleMap, useLoadScript } from '@react-google-maps/api'
+import { GoogleMap, useLoadScript, MarkerF } from '@react-google-maps/api'
 
 const libraries = ['places']
 const mapContainerStyle = {
@@ -64,7 +64,22 @@ function App() {
             lng: longitude,
           }}
           onLoad={onMapLoad}
-        ></GoogleMap>
+        >
+          <MarkerF
+            icon={{
+              fillColor: '#115EC3', //塗り潰し色
+              fillOpacity: 0.8, //塗り潰し透過率
+              path: google.maps.SymbolPath.CIRCLE, //円を指定
+              scale: 10, //円のサイズ
+              strokeColor: '#FFFFFF', //枠の色
+              strokeWeight: 3,
+            }}
+            position={{
+              lat: latitude,
+              lng: longitude,
+            }}
+          />
+        </GoogleMap>
       </div>
     </>
   )

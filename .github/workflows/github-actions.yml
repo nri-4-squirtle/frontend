@@ -1,0 +1,13 @@
+name: GitHub Actions Front Deploy
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Module Install
+        run: npm install --production
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build

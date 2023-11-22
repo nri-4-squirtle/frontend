@@ -2,6 +2,8 @@ import { useEffect, useState, useLayoutEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { getIconInfoList } from './api/parkingAreaApi'
+import { MarkerWithLabel } from '@googlemaps/markerwithlabel'
 
 // import getCurrentPosition from './api/googleMapApi'
 
@@ -17,10 +19,14 @@ const mapContainerStyle = {
 
 let Map
 let infoWindows
+let resGlobal
+let parkInfoGlobal
+let markerList = []
 
 function App() {
   const [latitude, setLatitude] = useState(100)
   const [longitude, setLongitude] = useState(100)
+  const [showAllRest, setShowAllRest] = useState(false)
   //const [status, setStatus] = useState('')
   //const [nearRest, setNearRest] = useState({})
 
@@ -85,47 +91,76 @@ function App() {
       throw error
     }
   }
+  function switchShowMarker(showAllRest) {
+    console.log(showAllRest)
+    console.log('switch')
+    markerList.forEach((marker) => {
+      marker.setVisible(
+        showAllRest ? parkInfoGlobal[marker.getTitle()].carNum != '0' : true
+      )
+    })
+    /*     resGlobal.forEach((place) => {
+      const visible = parkInfoGlobal[place.place_id].carNum != '0'
+      console.log(visible)
+      createMarker(place, parkInfoGlobal[place.place_id], visible)
+    }) */
+  }
   //nearbySerchの検索結果をマーカーを新規作成する処理に渡すcallback関数
-  function cb(res, status) {
+  async function cb(res, status) {
     if (status != 'OK' && status != 'ZERO_RESULTS') {
       throw new Error(`status not OK ${status}`)
     }
+    const placeIdList = res.map((place) => place.place_id)
+    console.log(placeIdList)
+    const parkInfo = await getIconInfoList(placeIdList)
+    resGlobal = await res
+    parkInfoGlobal = await parkInfo
     res.forEach((place) => {
-      console.log(place)
-      createMarker(place)
+      createMarker(place, parkInfo[place.place_id], true)
     })
+    console.log(Map)
     return
   }
   //マーカーを作成する
-  function createMarker(place) {
+  function createMarker(place, parkInfo, visible) {
     if (!place.geometry || !place.geometry.location) return
     // お店情報マーカー
     const marker = new google.maps.Marker({
       map: Map,
       position: place.geometry.location,
-      title: place.name,
+      title: place.place_id,
       optimized: false,
+      visible: parkInfo.carNum != '0',
+      label: parkInfo.carNum + '台',
+      labelAnchor: new google.maps.Point(38, 0), //ラベル文字の基点
+      icon: {
+        url: 'https://maps.google.com/mapfiles/ms/micons/blue.png',
+        scaledSize: new google.maps.Size(60, 60), //マーカーのサイズを縮小
+      },
     })
-
     // お店情報ウィンドウ
     infoWindows = new google.maps.InfoWindow()
 
     // お店情報ウィンドウにて表示する情報
     const infoList = [
-      place.name,
-      place.rating == undefined ? '評価：情報なし' : `評価：${place.rating}/5`,
+      `<p style = "color: black">${place.name}`,
+      `<p style = "color: black">${JSON.stringify(parkInfo)}`,
+      place.rating == undefined
+        ? `<p style = "color: black">評価：情報なし`
+        : `<p style = "color: black">評価：${place.rating}/5`,
       place.photos && place.photos.length > 0
         ? `<p><img style="max-width:200px" src="${place.photos[0].getUrl()}"/></p>`
         : null,
     ]
 
-    const info = infoList.join('<br>') // 改行区切りで加工して見せる
+    const info = infoList.join('</p>') // 改行区切りで加工して見せる
     google.maps.event.addListener(marker, 'click', () => {
       if (infoWindows == undefined || infoWindows == null) return
       infoWindows.close()
       infoWindows.setContent(info)
       infoWindows.open(Map, marker)
     })
+    markerList.push(marker)
   }
 
   //現在地の情報を取得する
@@ -175,6 +210,14 @@ function App() {
           onLoad={onMapLoad}
         ></GoogleMap>
       </div>
+      <input
+        type="button"
+        value="Switch"
+        onClick={() => {
+          switchShowMarker(showAllRest)
+          setShowAllRest(!showAllRest)
+        }}
+      />
     </>
   )
 }

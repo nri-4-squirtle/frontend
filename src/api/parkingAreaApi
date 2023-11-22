@@ -1,0 +1,9 @@
+export const getIconInfoList = async (placeIdList) => {
+  const BASE_URL =
+    'https://i5hb8iyaf3.execute-api.us-east-1.amazonaws.com/dev/restaurant' // エンドポイントのURL
+  const queryParams = placeIdList.map((item) => 'placeId=' + item).join('&')
+  // console.log(BASE_URL + `?${queryParams}`)
+  const res = await fetch(BASE_URL + `?${queryParams}`, { mode: 'cors' })
+  const data = await res.json()
+  return data
+}

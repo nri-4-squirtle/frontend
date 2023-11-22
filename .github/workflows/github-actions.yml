@@ -11,6 +11,6 @@ jobs:
           node-version: 20.9.0
           cache: npm
       - name: Module Install
-        run: npm install --production
+        run: npm install
       - name: Build
         run: npm run build

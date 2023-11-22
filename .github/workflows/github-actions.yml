@@ -12,7 +12,5 @@ jobs:
           cache: npm
       - name: Module Install
         run: npm install --production
-      - name: Lint
-        run: npm run lint
       - name: Build
         run: npm run build

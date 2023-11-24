@@ -14,7 +14,7 @@ import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api'
 const libraries = ['places']
 const mapContainerStyle = {
   height: '100vh',
-  width: '100vh',
+  width: '100%',
 }
 
 let Map
@@ -135,7 +135,7 @@ function App() {
       optimized: false,
       visible: parkInfo.carNum != '0' && parkInfo.carNum != null,
       label: parkInfo.carNum == null ? '情報無し' : parkInfo.carNum + '台',
-      labelAnchor: new google.maps.Point(38, 0), //ラベル文字の基点
+      //labelAnchor: new google.maps.Point(38, 0), //ラベル文字の基点
       icon: {
         url: `https://maps.google.com/mapfiles/kml/paddle/${
           parkInfo.carNum == null
@@ -207,7 +207,6 @@ function App() {
   return (
     <>
       <div className="googleMap">
-        <div className="transparent"></div>
         <GoogleMap
           id="map"
           mapContainerStyle={mapContainerStyle}

@@ -14,8 +14,8 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
-        env: 
-          VITE_GoogleMapsApiKey: ${{ secrets.VITE_GOOGLEMAPSAPIKEY }}
+        env:
+          VITE_googleMapsApiKey: ${{ secrets.VITE_GOOGLEMAPSAPIKEY }}
       - name: Upload build result
         uses: actions/upload-artifact@v1
         with:

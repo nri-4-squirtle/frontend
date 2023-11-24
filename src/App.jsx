@@ -1,11 +1,7 @@
 import { useEffect, useState, useLayoutEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import { getIconInfoList } from './api/parkingAreaApi'
 import { MarkerWithLabel } from '@googlemaps/markerwithlabel'
-
-// import getCurrentPosition from './api/googleMapApi'
 
 import React, { useCallback, useRef } from 'react'
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api'
@@ -27,8 +23,6 @@ function App() {
   const [latitude, setLatitude] = useState(100)
   const [longitude, setLongitude] = useState(100)
   const [showAllRest, setShowAllRest] = useState(false)
-  //const [status, setStatus] = useState('')
-  //const [nearRest, setNearRest] = useState({})
 
   const mapRef = useRef()
   const onMapLoad = useCallback((map) => {
@@ -92,8 +86,6 @@ function App() {
     }
   }
   function switchShowMarker(showAllRest) {
-    console.log(showAllRest)
-    console.log('switch')
     markerList.forEach((marker) => {
       marker.setVisible(
         showAllRest
@@ -102,11 +94,6 @@ function App() {
           : true
       )
     })
-    /*     resGlobal.forEach((place) => {
-      const visible = parkInfoGlobal[place.place_id].carNum != '0'
-      console.log(visible)
-      createMarker(place, parkInfoGlobal[place.place_id], visible)
-    }) */
   }
   //nearbySerchの検索結果をマーカーを新規作成する処理に渡すcallback関数
   async function cb(res, status) {
@@ -114,14 +101,12 @@ function App() {
       throw new Error(`status not OK ${status}`)
     }
     const placeIdList = res.map((place) => place.place_id)
-    console.log(placeIdList)
     const parkInfo = await getIconInfoList(placeIdList)
     resGlobal = await res
     parkInfoGlobal = await parkInfo
     res.forEach((place) => {
       createMarker(place, parkInfo[place.place_id], true)
     })
-    console.log(Map)
     return
   }
   //マーカーを作成する
@@ -134,7 +119,10 @@ function App() {
       title: place.place_id,
       optimized: false,
       visible: parkInfo.carNum != '0' && parkInfo.carNum != null,
-      label: parkInfo.carNum == null ? '情報無し' : parkInfo.carNum + '台',
+      label:
+        parkInfo.carNum == null
+          ? '情報無し'
+          : parkInfo.carNum + '台' + (parkInfo.carNum == '10' ? '以上' : ''),
       //labelAnchor: new google.maps.Point(38, 0), //ラベル文字の基点
       icon: {
         url: `https://maps.google.com/mapfiles/kml/paddle/${
@@ -147,27 +135,58 @@ function App() {
         scaledSize: new google.maps.Size(60, 60), //マーカーのサイズを縮小
       },
     })
-    // お店情報ウィンドウ
-    infoWindows = new google.maps.InfoWindow()
 
-    // お店情報ウィンドウにて表示する情報
-    const infoList = [
-      `<p style = "color: black">${place.name}`,
-      `<p style = "color: black">${JSON.stringify(parkInfo)}`,
-      place.rating == undefined
-        ? `<p style = "color: black">評価：情報なし`
-        : `<p style = "color: black">評価：${place.rating}/5`,
-      place.photos && place.photos.length > 0
-        ? `<p><img style="max-width:200px" src="${place.photos[0].getUrl()}"/></p>`
-        : null,
-    ]
+    infoWindows = new google.maps.InfoWindow({
+      maxWidth: 300,
+    })
 
-    const info = infoList.join('</p>') // 改行区切りで加工して見せる
+    const reputationInfo =
+      parkInfo.reputations == null
+        ? ''
+        : parkInfo.reputations.map((item) => item.text + '<br/>')
+
+    const info = `
+      ${
+        place.photos && place.photos.length > 0
+          ? `<p><img style="max-width:300px" src="${place.photos[0].getUrl()}"/></p>`
+          : ''
+      }
+
+      <p style = "color: black">${place.name}</p>
+
+      <p style = "color: black">評価：${
+        place.rating == undefined ? '情報無し' : place.rating + '/5'
+      }</p>
+
+      <p style = "color: black"> 駐車可能台数 : ${
+        parkInfo.carNum == null
+          ? '情報無し'
+          : parkInfo.carNum + '台' + (parkInfo.carNum == '10' ? '以上' : '')
+      }</p>
+
+      <div style= "color: black; width: 250px; height: 80px; border: 1px solid #000; overflow-y: scroll;">
+        ${parkInfo.reputations == null ? '' : reputationInfo.join('')}
+      </div>
+
+      <input id="submit" type="button" value="口コミ投稿" onclick="submitReputation()"
+      />
+    `
+
     google.maps.event.addListener(marker, 'click', () => {
       if (infoWindows == undefined || infoWindows == null) return
       infoWindows.close()
       infoWindows.setContent(info)
       infoWindows.open(Map, marker)
+    })
+
+    infoWindows.addListener('domready', () =>
+      document
+        .getElementById('submit')
+        .addEventListener('click', () => console.log('submit'))
+    )
+
+    google.maps.event.addListener(Map, 'click', function () {
+      infoWindows.close()
     })
     markerList.push(marker)
   }
@@ -231,19 +250,3 @@ function App() {
 }
 
 export default App
-
-//memo
-/*           <MarkerF
-            icon={{
-              fillColor: '#115EC3', //塗り潰し色
-              fillOpacity: 0.8, //塗り潰し透過率
-              path: google.maps.SymbolPath.CIRCLE, //円を指定
-              scale: 10, //円のサイズ
-              strokeColor: '#FFFFFF', //枠の色
-              strokeWeight: 3,
-            }}
-            position={{
-              lat: latitude,
-              lng: longitude,
-            }}
-          /> */

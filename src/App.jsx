@@ -96,7 +96,10 @@ function App() {
     console.log('switch')
     markerList.forEach((marker) => {
       marker.setVisible(
-        showAllRest ? parkInfoGlobal[marker.getTitle()].carNum != '0' : true
+        showAllRest
+          ? parkInfoGlobal[marker.getTitle()].carNum != '0' &&
+              parkInfoGlobal[marker.getTitle()].carNum != null
+          : true
       )
     })
     /*     resGlobal.forEach((place) => {
@@ -130,11 +133,17 @@ function App() {
       position: place.geometry.location,
       title: place.place_id,
       optimized: false,
-      visible: parkInfo.carNum != '0',
-      label: parkInfo.carNum + '台',
+      visible: parkInfo.carNum != '0' && parkInfo.carNum != null,
+      label: parkInfo.carNum == null ? '情報無し' : parkInfo.carNum + '台',
       labelAnchor: new google.maps.Point(38, 0), //ラベル文字の基点
       icon: {
-        url: 'https://maps.google.com/mapfiles/ms/micons/blue.png',
+        url: `https://maps.google.com/mapfiles/kml/paddle/${
+          parkInfo.carNum == null
+            ? 'wht'
+            : parkInfo.carNum == '0'
+              ? 'red'
+              : 'blu'
+        }-blank.png`,
         scaledSize: new google.maps.Size(60, 60), //マーカーのサイズを縮小
       },
     })

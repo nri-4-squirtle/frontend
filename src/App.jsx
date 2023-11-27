@@ -146,10 +146,8 @@ function App() {
     google.maps.event.addListener(marker, 'click', () => {
       if (infoWindows == undefined || infoWindows == null) return
       infoWindows.close()
-      // infoWindows.setContent(info)
-      // infoWindows.open(Map, marker)
 
-      // InfoWindowContent を使用して情報ウィンドウの内容を表示
+      // InfoWindowContent を使用
       const content = ReactDOMServer.renderToString(
         <InfoWindowContent
           place={place}

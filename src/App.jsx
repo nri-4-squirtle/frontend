@@ -143,38 +143,6 @@ function App() {
       maxWidth: 300,
     })
 
-    const reputationInfo =
-      parkInfo.reputations == null
-        ? ''
-        : parkInfo.reputations.map((item) => item.text + '<br/>')
-
-    const info = `
-      ${
-        place.photos && place.photos.length > 0
-          ? `<p><img style="max-width:300px" src="${place.photos[0].getUrl()}"/></p>`
-          : ''
-      }
-
-      <p style = "color: black">${place.name}</p>
-
-      <p style = "color: black">評価：${
-        place.rating == undefined ? '情報無し' : place.rating + '/5'
-      }</p>
-
-      <p style = "color: black"> 駐車可能台数 : ${
-        parkInfo.carNum == null
-          ? '情報無し'
-          : parkInfo.carNum + '台' + (parkInfo.carNum == '10' ? '以上' : '')
-      }</p>
-
-      <div style= "color: black; width: 250px; height: 80px; border: 1px solid #000; overflow-y: scroll;">
-        ${parkInfo.reputations == null ? '' : reputationInfo.join('')}
-      </div>
-
-      <input id="submit" type="button" value="口コミ投稿" onclick="submitReputation()"
-      />
-    `
-
     google.maps.event.addListener(marker, 'click', () => {
       if (infoWindows == undefined || infoWindows == null) return
       infoWindows.close()

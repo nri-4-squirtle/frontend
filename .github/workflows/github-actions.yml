@@ -1,0 +1,49 @@
+name: GitHub Actions Front Deploy
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20.9.0
+          cache: npm
+      - name: Module Install
+        run: npm install
+      - name: Build
+        run: npm run build
+        env:
+          VITE_googleMapsApiKey: ${{ secrets.VITE_GOOGLEMAPSAPIKEY }}
+      - name: Upload build result
+        uses: actions/upload-artifact@v1
+        with:
+          name: build
+          path: dist/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build result
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: dist/
+      - name: Publish to AWS S3
+        uses: opspresso/action-s3-sync@master
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          FROM_PATH: 'dist/'
+          DEST_PATH: 's3://nri-4-squirtle-frontend'
+      - name: Clear cache in CloudFront
+        uses: chetan/invalidate-cloudfront-action@v1.2
+        env:
+          DISTRIBUTION: ${{ secrets.DISTRIBUTION }}
+          PATHS: '/*'
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

@@ -6,6 +6,9 @@ import { MarkerWithLabel } from '@googlemaps/markerwithlabel'
 import React, { useCallback, useRef } from 'react'
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api'
 
+import InfoWindowContent from './components/InfoWindowContent'
+import ReactDOMServer from 'react-dom/server'
+
 // TODO : Performance warning
 const libraries = ['places']
 const mapContainerStyle = {
@@ -31,7 +34,7 @@ function App() {
   //API読み込み後に再レンダーを引き起こさないため、useStateを使わず、useRefとuseCallbackを使っています。
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_googleMapsApiKey,
+    googleMapsApiKey: 'AIzaSyBU7KmTSPlbxoqjDzbV05MmZsohzeLPMBM',
     // ここにAPIキーを入力します。今回は.envに保存しています。
     libraries,
   })
@@ -175,7 +178,18 @@ function App() {
     google.maps.event.addListener(marker, 'click', () => {
       if (infoWindows == undefined || infoWindows == null) return
       infoWindows.close()
-      infoWindows.setContent(info)
+      // infoWindows.setContent(info)
+      // infoWindows.open(Map, marker)
+
+      // InfoWindowContent を使用して情報ウィンドウの内容を表示
+      const content = ReactDOMServer.renderToString(
+        <InfoWindowContent
+          place={place}
+          parkInfo={parkInfo}
+          // submitReputation={submitReputation}
+        />
+      )
+      infoWindows.setContent(content)
       infoWindows.open(Map, marker)
     })
 

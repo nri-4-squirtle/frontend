@@ -30,6 +30,7 @@ function App() {
   const [longitude, setLongitude] = useState(100)
   const [showAllRest, setShowAllRest] = useState(false)
   const [detailVisible, setDetailVisible] = useState(false)
+  const [curentClickedPlace, setCurentClickedPlace] = useState('')
 
   const handleDetailVisible = () => {
     setDetailVisible(false)
@@ -182,9 +183,11 @@ function App() {
 
     let content
     google.maps.event.addListener(marker, 'click', () => {
+      console.log('aaaaaaaaaaaaaaaaaaaaaaa')
+      setCurentClickedPlace(marker.title)
       if (infoWindows == undefined || infoWindows == null) return
       infoWindows.close()
-
+      console.log('abbbbbbbbbbbb')
       content = ReactDOMServer.renderToString(
         <InfoWindowContent place={place} parkInfo={parkInfo} />
       )
@@ -193,11 +196,11 @@ function App() {
       infoWindows.open(Map, marker)
     })
 
-    infoWindows.addListener('domready', () =>
+    infoWindows.addListener('domready', () => {
       document.getElementById('button').addEventListener('click', (e) => {
         setDetailVisible(true)
       })
-    )
+    })
     infoWindows.addListener('closeclick', () => {
       infoWindows.close()
       content = ReactDOMServer.renderToString(
@@ -261,6 +264,7 @@ function App() {
       </div>
       <ModalComponent
         isOpen={detailVisible}
+        curentClickedPlace={curentClickedPlace}
         onClose={() => handleDetailVisible()}
       />
       <input

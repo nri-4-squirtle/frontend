@@ -1,3 +1,61 @@
-.store-img {
-  max-width: 300px;
+.store-info {
+  text-align: center;
+}
+.store-name {
+  color: black;
+  font-size: 1rem;
+  margin: 10px 0;
+}
+
+.store-parknum {
+  color: #ef6c00;
+  font-size: 1rem;
+  margin: 0px;
+}
+
+.store-review {
+  color: #666;
+  font-size: 1rem;
+  margin: 0px;
+}
+
+.display-post-button {
+  color: white;
+  background-color: #ef6c00;
+  border-radius: 100vh;
+  font-size: 1rem;
+  cursor: pointer;
+  border: 0px;
+  padding: 0.5rem;
+  margin: 0rem 0rem 0.5rem 0rem;
+}
+
+#top-reviews {
+  text-align: left;
+  margin: 20px;
+}
+
+.review {
+  border-bottom: 1px solid #ddd;
+  padding: 0em 0em 0.5em 0em;
+}
+
+.review-title {
+  font-size: 1em;
+  margin: 0px;
+}
+
+.review:last-child {
+  border-bottom: none;
+}
+
+.review-text {
+  color: #333;
+  font-size: 12px;
+  margin-bottom: 1px;
+}
+
+.review-rating {
+  color: #ef6c00;
+  font-size: 4px;
 }

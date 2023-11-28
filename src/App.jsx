@@ -1,18 +1,24 @@
 import { useEffect, useState, useLayoutEffect } from 'react'
+import ReactDOMServer from 'react-dom/server'
+import {createRoot}  from 'react-dom/client'
+
 import './App.css'
 import { getIconInfoList } from './api/parkingAreaApi'
+
 
 import React, { useCallback, useRef } from 'react'
 import { GoogleMap, useLoadScript } from '@react-google-maps/api'
 
 import InfoWindowContent from './components/InfoWindowContent'
 import ReviewFormComponent from './components/ReviewFormComponent'
-import ReactDOMServer from 'react-dom/server'
+import Header from './components/Header'
+import SwitchButton from './components/SwitchButton'
+import CurrentFocusButton from './components/CurrentFocusButton'
 
 // TODO : Performance warning
 const libraries = ['places']
 const mapContainerStyle = {
-  height: '100vh',
+  height: '90vh',
   width: '100%',
 }
 
@@ -38,7 +44,16 @@ function App() {
     // ここにAPIキーを入力します。今回は.envに保存しています。
     libraries,
   })
-
+  function switchShowMarker(showAllRest) {
+    markerList.forEach((marker) => {
+      marker.setVisible(
+        showAllRest
+          ? parkInfoGlobal[marker.getTitle()].carNum != '0' &&
+              parkInfoGlobal[marker.getTitle()].carNum != null
+          : true
+      )
+    })
+  }
   //近くの飲食店の情報を取得する
   function getNearFood(lat, lng) {
     try {
@@ -58,7 +73,6 @@ function App() {
         center: currentPosition,
         zoom: 18,
       })
-      //現在地を示すマーカーを作成する
       new google.maps.Marker({
         icon: {
           fillColor: '#115EC3', //塗り潰し色
@@ -83,22 +97,35 @@ function App() {
       var service = new google.maps.places.PlacesService(Map)
       //近くの飲食店を検索する
       service.nearbySearch(request, cb)
+
+      // 画面表示の編集（不要なGoogleMapのボタンを非表示、ボタンの追加
+      Map.setOptions({ mapTypeControl: false });
+      Map.setOptions({ fullscreenControl: false });
+      Map.setOptions({ streetViewControl: false });
+      Map.setOptions({ zoomControl: false });
+
+      // Create SwitchButton and CurrentFocusButton
+      const switchButtonDiv = document.createElement("div");
+      const switchRoot = createRoot(switchButtonDiv);
+      switchRoot.render(
+        <SwitchButton 
+          switchShowMarker={switchShowMarker}
+          showAllRest={showAllRest}
+          changeShowState={(isState) => setShowAllRest(isState)}
+          />);
+      Map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(switchButtonDiv);      //現在地を示すマーカーを作成する
+
+      const currentFocusButtonDiv = document.createElement("div");
+      const currentFocusRoot = createRoot(currentFocusButtonDiv);
+      currentFocusRoot.render(<CurrentFocusButton setLatLng={setLatLng}/>);
+      Map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(currentFocusButtonDiv);      //現在地を示すマーカーを作成する
+      
     } catch (error) {
       alert('検索処理でエラーが発生しました！')
       throw error
     }
   }
-  function switchShowMarker(showAllRest) {
-    markerList.forEach((marker) => {
-      marker.setVisible(
-        showAllRest
-          ? parkInfoGlobal[marker.getTitle()].carNum != '0' &&
-              parkInfoGlobal[marker.getTitle()].carNum != null
-          : true
-      )
-    })
-  }
-  /** 
+  /**
    * @description 検索結果をマーカーを新規作成する処理に渡すcallback関数
    * @Input res 検索結果 status 検索結果のステータス
    * @param {google.maps.places.PlaceResult[]} res
@@ -106,7 +133,6 @@ function App() {
    * @Output なし
    * */
   async function cb(res, status) {
-
     // 検索結果が正常に取得できなかった場合はエラーを投げる
     if (status != 'OK' && status != 'ZERO_RESULTS') {
       throw new Error(`status not OK ${status}`)
@@ -134,13 +160,13 @@ function App() {
    * @param {boolean} visible
    * @Output なし
    * */
-  
+
   function createMarker(place, parkInfo, visible) {
     //　場所のジオメトリ情報および位置情報がない場合は処理を終了する
     if (!place.geometry || !place.geometry.location) {
       return
     }
-    
+
     // お店情報マーカー
     const marker = new google.maps.Marker({
       map: Map,
@@ -148,9 +174,10 @@ function App() {
       title: place.place_id,
       optimized: false,
       visible: parkInfo.carNum != '0' && parkInfo.carNum != null,
-      label:{
-        className: "markerLabel",
-        text:place.name.length > 8 ? place.name.slice(0, 8)+"...":place.name,
+      label: {
+        className: 'markerLabel',
+        text:
+          place.name.length > 8 ? place.name.slice(0, 8) + '...' : place.name,
       },
       icon: {
         url: `https://maps.google.com/mapfiles/kml/paddle/${
@@ -161,8 +188,8 @@ function App() {
               : parseInt(parkInfo.carNum) >= 10
                 ? '10.png'
                 : parseInt(parkInfo.carNum) > 0
-                ? parkInfo.carNum +'.png'
-                : 'blu-blank.png'
+                  ? parkInfo.carNum + '.png'
+                  : 'blu-blank.png'
         }`,
         scaledSize: new google.maps.Size(60, 60), //マーカーのサイズを縮小
       },
@@ -209,6 +236,7 @@ function App() {
 
   //現在地の情報を取得する
   function setLatLng() {
+    console.log("setLatLng");
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -239,9 +267,15 @@ function App() {
   if (loadError) return <div>Error</div>
   if (!isLoaded) return <div>Loading</div>
 
+
+
+
   return (
-    <>
-      <div className="googleMap">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <div className="header" style={{ flex: '0 0 65px', overflow: 'hidden' }}>
+        <Header />
+      </div>
+      <div className="googleMap" style={{ flex: '1', overflow: 'auto' }}>
         <GoogleMap
           id="map"
           mapContainerStyle={mapContainerStyle}
@@ -253,15 +287,15 @@ function App() {
           onLoad={onMapLoad}
         ></GoogleMap>
       </div>
-      <input
+      {/* <input
         type="button"
         value="Switch"
         onClick={() => {
           switchShowMarker(showAllRest)
           setShowAllRest(!showAllRest)
         }}
-      />
-    </>
+      /> */}
+    </div>
   )
 }
 

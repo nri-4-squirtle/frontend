@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 import { grey } from '@mui/material/colors'
 
-const ModalComponent = ({ isOpen, onClose }) => {
+const ModalComponent = ({ isOpen, onClose, curentClickedPlace }) => {
   //   const classes = useStyles()
   const [open, setOpen] = useState(false)
   const [parkingCount, setParkingCount] = useState('')
@@ -24,11 +24,24 @@ const ModalComponent = ({ isOpen, onClose }) => {
     onClose() // モーダルを閉じるためのコールバックを実行
   }
 
-  const handleSubmit = () => {
-    // フォームのデータを送信するための処理を実装する
-    // 例えば、サーバーにデータを送信する、他の処理を実行するなど
-    console.log('Parking Count:', parkingCount)
-    console.log('Parking Review:', parkingReview)
+  const handleSubmit = async () => {
+    const BASE_URL =
+      'https://i5hb8iyaf3.execute-api.us-east-1.amazonaws.com/dev/reputation' // エンドポイントのURL
+
+    const res = await fetch(BASE_URL, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      mode: 'cors',
+      body: JSON.stringify({
+        placeId: curentClickedPlace,
+        carNum: parkingCount,
+        text: parkingReview,
+      }),
+    })
+    const data = await res.json()
 
     // モーダルを閉じる
     setOpen(false)

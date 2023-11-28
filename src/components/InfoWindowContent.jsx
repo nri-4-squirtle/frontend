@@ -43,14 +43,14 @@ const InfoWindowContent = ({ place, parkInfo }) => {
       </p>
 
       <div id="top-reviews">
-        <h2 class="review-title">最新の口コミ</h2>
-        {parkInfo.reputations.map((element) => {
-          return (
-            <div class="review">
-              <p class="review-text">{element}</p>
-            </div>
-          )
-        })}
+        <h2 className="review-title">最新の口コミ</h2>
+        {parkInfo.reputations.length > 0 && (
+          <div className="review">
+            <p className="review-text">
+              {parkInfo.reputations[parkInfo.reputations.length - 1].text}
+            </p>
+          </div>
+        )}
       </div>
 
       <button id="button" className="display-post-button" type="submit">

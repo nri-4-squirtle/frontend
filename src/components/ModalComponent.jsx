@@ -43,28 +43,35 @@ const ModalComponent = ({ isOpen, onClose }) => {
           <DialogContent>
             <TextField
               label="駐車場は何台分ありますか？"
-              variant="outlined"
+              variant="standard"
+              type="number"
               value={parkingCount}
               onChange={(e) => setParkingCount(e.target.value)}
               fullWidth
               margin="normal"
+              color="warning"
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
             <TextField
               label="駐車場はどうでしたか？"
-              variant="outlined"
+              variant="standard"
               value={parkingReview}
               onChange={(e) => setParkingReview(e.target.value)}
               fullWidth
               margin="normal"
-              multiline
-              rows={4}
+              color="warning"
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
           </DialogContent>
           <DialogActions>
             <Button onClick={onClose} style={{ color: grey[500] }}>
               キャンセル
             </Button>
-            <Button onClick={handleSubmit} color="primary">
+            <Button onClick={handleSubmit} color="warning">
               登録
             </Button>
           </DialogActions>

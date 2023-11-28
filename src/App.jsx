@@ -1,10 +1,13 @@
 import { useEffect, useState, useLayoutEffect } from 'react'
 import './App.css'
 import { getIconInfoList } from './api/parkingAreaApi'
-import { MarkerWithLabel } from '@googlemaps/markerwithlabel'
 
 import React, { useCallback, useRef } from 'react'
-import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api'
+import { GoogleMap, useLoadScript } from '@react-google-maps/api'
+
+import InfoWindowContent from './components/InfoWindowContent'
+import ReviewFormComponent from './components/ReviewFormComponent'
+import ReactDOMServer from 'react-dom/server'
 
 // TODO : Performance warning
 const libraries = ['places']
@@ -31,7 +34,7 @@ function App() {
   //API読み込み後に再レンダーを引き起こさないため、useStateを使わず、useRefとuseCallbackを使っています。
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_googleMapsApiKey,
+    googleMapsApiKey: 'AIzaSyBU7KmTSPlbxoqjDzbV05MmZsohzeLPMBM',
     // ここにAPIキーを入力します。今回は.envに保存しています。
     libraries,
   })
@@ -140,50 +143,34 @@ function App() {
       maxWidth: 300,
     })
 
-    const reputationInfo =
-      parkInfo.reputations == null
-        ? ''
-        : parkInfo.reputations.map((item) => item.text + '<br/>')
-
-    const info = `
-      ${
-        place.photos && place.photos.length > 0
-          ? `<p><img style="max-width:300px" src="${place.photos[0].getUrl()}"/></p>`
-          : ''
-      }
-
-      <p style = "color: black">${place.name}</p>
-
-      <p style = "color: black">評価：${
-        place.rating == undefined ? '情報無し' : place.rating + '/5'
-      }</p>
-
-      <p style = "color: black"> 駐車可能台数 : ${
-        parkInfo.carNum == null
-          ? '情報無し'
-          : parkInfo.carNum + '台' + (parkInfo.carNum == '10' ? '以上' : '')
-      }</p>
-
-      <div style= "color: black; width: 250px; height: 80px; border: 1px solid #000; overflow-y: scroll;">
-        ${parkInfo.reputations == null ? '' : reputationInfo.join('')}
-      </div>
-
-      <input id="submit" type="button" value="口コミ投稿" onclick="submitReputation()"
-      />
-    `
-
+    let content
     google.maps.event.addListener(marker, 'click', () => {
       if (infoWindows == undefined || infoWindows == null) return
       infoWindows.close()
-      infoWindows.setContent(info)
+
+      content = ReactDOMServer.renderToString(
+        <InfoWindowContent place={place} parkInfo={parkInfo} />
+      )
+
+      infoWindows.setContent(content)
       infoWindows.open(Map, marker)
     })
 
     infoWindows.addListener('domready', () =>
-      document
-        .getElementById('submit')
-        .addEventListener('click', () => console.log('submit'))
+      document.getElementById('button').addEventListener('click', (e) => {
+        infoWindows.setContent(
+          ReactDOMServer.renderToString(<ReviewFormComponent />)
+        )
+      })
     )
+    infoWindows.addListener('closeclick', () => {
+      infoWindows.close()
+      content = ReactDOMServer.renderToString(
+        <InfoWindowContent place={place} parkInfo={parkInfo} />
+      )
+
+      infoWindows.setContent(content)
+    })
 
     google.maps.event.addListener(Map, 'click', function () {
       infoWindows.close()

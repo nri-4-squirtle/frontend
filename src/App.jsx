@@ -8,6 +8,7 @@ import { GoogleMap, useLoadScript } from '@react-google-maps/api'
 import InfoWindowContent from './components/InfoWindowContent'
 import ReviewFormComponent from './components/ReviewFormComponent'
 import ReactDOMServer from 'react-dom/server'
+import Button from '@mui/material/Button'
 
 // TODO : Performance warning
 const libraries = ['places']
@@ -224,6 +225,7 @@ function App() {
           onLoad={onMapLoad}
         ></GoogleMap>
       </div>
+      <Button variant="contained">Hello world</Button>
       <input
         type="button"
         value="Switch"

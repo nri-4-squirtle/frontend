@@ -15,49 +15,8 @@ const InfoWindowContent = ({ place, parkInfo }) => {
     parkInfo.reputations == null
       ? ''
       : parkInfo.reputations.map((item) => item.text + '<br/>')
-  parkInfo.reputations = ['駐車場が狭くて入りずらかったです', '3台止められます']
-  // return (
-  //   <Card>
-  //     <CardMedia
-  //       component="img"
-  //       alt={place.name}
-  //       height="140"
-  //       image={place.photos[0].getUrl()}
-  //     />
-  //     <CardContent>
-  //       <Typography variant="h5" component="div">
-  //         {place.name}
-  //       </Typography>
-  //       <Typography variant="subtitle1" color="textSecondary">
-  //         評価：{place.rating == undefined ? '情報無し' : `${place.rating}/5`}
-  //       </Typography>
-  //       <Typography variant="subtitle1" color="textSecondary">
-  //         駐車可能台数 :{' '}
-  //         {parkInfo.carNum == null
-  //           ? '情報無し'
-  //           : parkInfo.carNum + '台' + (parkInfo.carNum === '10' ? '以上' : '')}
-  //       </Typography>
-  //       <Button variant="contained" color="red">
-  //         口コミ投稿
-  //       </Button>
-  //       <Typography variant="h6" mt={2}>
-  //         上位の口コミ
-  //       </Typography>
-  //       <div
-  //         style={{
-  //           color: 'black',
-  //           width: '250px',
-  //           height: '80px',
-  //           border: '1px solid #000',
-  //           overflowY: 'scroll',
-  //         }}
-  //       >
-  //         {parkInfo.reputations == null ? '' : reputationInfo.join('')}
-  //       </div>
-  //     </CardContent>
-  //   </Card>
-  // )
-
+  // ↓サンプルデータ
+  // parkInfo.reputations = ['駐車場が狭くて入りずらかったです', '3台止められます']
   return (
     <div className="store-info">
       {place.photos && place.photos.length > 0 && (

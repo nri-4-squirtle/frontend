@@ -8,7 +8,6 @@ import { GoogleMap, useLoadScript } from '@react-google-maps/api'
 import InfoWindowContent from './components/InfoWindowContent'
 import ReviewFormComponent from './components/ReviewFormComponent'
 import ReactDOMServer from 'react-dom/server'
-import Button from '@mui/material/Button'
 
 // TODO : Performance warning
 const libraries = ['places']
@@ -99,7 +98,7 @@ function App() {
       )
     })
   }
-  /** 
+  /**
    * @description 検索結果をマーカーを新規作成する処理に渡すcallback関数
    * @Input res 検索結果 status 検索結果のステータス
    * @param {google.maps.places.PlaceResult[]} res
@@ -107,7 +106,6 @@ function App() {
    * @Output なし
    * */
   async function cb(res, status) {
-
     // 検索結果が正常に取得できなかった場合はエラーを投げる
     if (status != 'OK' && status != 'ZERO_RESULTS') {
       throw new Error(`status not OK ${status}`)
@@ -135,13 +133,13 @@ function App() {
    * @param {boolean} visible
    * @Output なし
    * */
-  
+
   function createMarker(place, parkInfo, visible) {
     //　場所のジオメトリ情報および位置情報がない場合は処理を終了する
     if (!place.geometry || !place.geometry.location) {
       return
     }
-    
+
     // お店情報マーカー
     const marker = new google.maps.Marker({
       map: Map,
@@ -149,9 +147,10 @@ function App() {
       title: place.place_id,
       optimized: false,
       visible: parkInfo.carNum != '0' && parkInfo.carNum != null,
-      label:{
-        className: "markerLabel",
-        text:place.name.length > 8 ? place.name.slice(0, 8)+"...":place.name,
+      label: {
+        className: 'markerLabel',
+        text:
+          place.name.length > 8 ? place.name.slice(0, 8) + '...' : place.name,
       },
       icon: {
         url: `https://maps.google.com/mapfiles/kml/paddle/${
@@ -162,8 +161,8 @@ function App() {
               : parseInt(parkInfo.carNum) >= 10
                 ? '10.png'
                 : parseInt(parkInfo.carNum) > 0
-                ? parkInfo.carNum +'.png'
-                : 'blu-blank.png'
+                  ? parkInfo.carNum + '.png'
+                  : 'blu-blank.png'
         }`,
         scaledSize: new google.maps.Size(60, 60), //マーカーのサイズを縮小
       },
@@ -254,7 +253,6 @@ function App() {
           onLoad={onMapLoad}
         ></GoogleMap>
       </div>
-      <Button variant="contained">Hello world</Button>
       <input
         type="button"
         value="Switch"

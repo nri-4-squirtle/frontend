@@ -1,13 +1,6 @@
-import React, { useState } from 'react'
-import ReviewFormComponent from './ReviewFormComponent'
+import React, { useState, useEffect } from 'react'
 
-const InfoWindowContent = ({ place, parkInfo, submitReputation }) => {
-  const [showReviewForm, setShowReviewForm] = useState(false)
-
-  const handleReviewClick = () => {
-    console.log(true)
-    setShowReviewForm(true)
-  }
+const InfoWindowContent = ({ place, parkInfo }) => {
   const reputationInfo =
     parkInfo.reputations == null
       ? ''
@@ -38,14 +31,12 @@ const InfoWindowContent = ({ place, parkInfo, submitReputation }) => {
           : parkInfo.carNum + '台' + (parkInfo.carNum === '10' ? '以上' : '')}
       </p>
       <button
+        id="button"
+        type="submit"
         style={{ color: 'black', cursor: 'pointer' }}
-        onClick={handleReviewClick}
       >
         駐車場の口コミを投稿する
       </button>
-      {/* 
-      ボタンが押下されたら駐車場口コミ登録画面に遷移するようにする
-      {showReviewForm && <div>{<ReviewFormComponent />}</div>} */}
 
       <div
         style={{
@@ -59,12 +50,7 @@ const InfoWindowContent = ({ place, parkInfo, submitReputation }) => {
         {parkInfo.reputations == null ? '' : reputationInfo.join('')}
       </div>
 
-      <input
-        id="submit"
-        type="button"
-        value="口コミ投稿"
-        // onClick={submitReputation}
-      />
+      <input id="submit" type="button" value="口コミ投稿" />
     </div>
   )
 }

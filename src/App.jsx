@@ -1,12 +1,12 @@
 import { useEffect, useState, useLayoutEffect } from 'react'
 import './App.css'
 import { getIconInfoList } from './api/parkingAreaApi'
-import { MarkerWithLabel } from '@googlemaps/markerwithlabel'
 
 import React, { useCallback, useRef } from 'react'
-import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api'
+import { GoogleMap, useLoadScript } from '@react-google-maps/api'
 
 import InfoWindowContent from './components/InfoWindowContent'
+import ReviewFormComponent from './components/ReviewFormComponent'
 import ReactDOMServer from 'react-dom/server'
 
 // TODO : Performance warning
@@ -143,27 +143,34 @@ function App() {
       maxWidth: 300,
     })
 
+    let content
     google.maps.event.addListener(marker, 'click', () => {
       if (infoWindows == undefined || infoWindows == null) return
       infoWindows.close()
 
-      // InfoWindowContent を使用
-      const content = ReactDOMServer.renderToString(
-        <InfoWindowContent
-          place={place}
-          parkInfo={parkInfo}
-          // submitReputation={submitReputation}
-        />
+      content = ReactDOMServer.renderToString(
+        <InfoWindowContent place={place} parkInfo={parkInfo} />
       )
+
       infoWindows.setContent(content)
       infoWindows.open(Map, marker)
     })
 
     infoWindows.addListener('domready', () =>
-      document
-        .getElementById('submit')
-        .addEventListener('click', () => console.log('submit'))
+      document.getElementById('button').addEventListener('click', (e) => {
+        infoWindows.setContent(
+          ReactDOMServer.renderToString(<ReviewFormComponent />)
+        )
+      })
     )
+    infoWindows.addListener('closeclick', () => {
+      infoWindows.close()
+      content = ReactDOMServer.renderToString(
+        <InfoWindowContent place={place} parkInfo={parkInfo} />
+      )
+
+      infoWindows.setContent(content)
+    })
 
     google.maps.event.addListener(Map, 'click', function () {
       infoWindows.close()

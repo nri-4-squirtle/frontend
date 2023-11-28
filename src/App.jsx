@@ -9,6 +9,9 @@ import InfoWindowContent from './components/InfoWindowContent'
 import ReviewFormComponent from './components/ReviewFormComponent'
 import ReactDOMServer from 'react-dom/server'
 
+import Modal from 'react-modal'
+import ModalComponent from './components/ModalComponent'
+
 // TODO : Performance warning
 const libraries = ['places']
 const mapContainerStyle = {
@@ -26,6 +29,11 @@ function App() {
   const [latitude, setLatitude] = useState(100)
   const [longitude, setLongitude] = useState(100)
   const [showAllRest, setShowAllRest] = useState(false)
+  const [detailVisible, setDetailVisible] = useState(false)
+
+  const handleDetailVisible = () => {
+    setDetailVisible(false)
+  }
 
   const mapRef = useRef()
   const onMapLoad = useCallback((map) => {
@@ -187,9 +195,7 @@ function App() {
 
     infoWindows.addListener('domready', () =>
       document.getElementById('button').addEventListener('click', (e) => {
-        infoWindows.setContent(
-          ReactDOMServer.renderToString(<ReviewFormComponent />)
-        )
+        setDetailVisible(true)
       })
     )
     infoWindows.addListener('closeclick', () => {
@@ -253,6 +259,10 @@ function App() {
           onLoad={onMapLoad}
         ></GoogleMap>
       </div>
+      <ModalComponent
+        isOpen={detailVisible}
+        onClose={() => handleDetailVisible()}
+      />
       <input
         type="button"
         value="Switch"

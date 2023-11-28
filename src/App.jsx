@@ -98,11 +98,25 @@ function App() {
       )
     })
   }
-  //nearbySerchの検索結果をマーカーを新規作成する処理に渡すcallback関数
+  /** 
+   * @description 検索結果をマーカーを新規作成する処理に渡すcallback関数
+   * @Input res 検索結果 status 検索結果のステータス
+   * @param {google.maps.places.PlaceResult[]} res
+   * @param {google.maps.places.PlacesServiceStatus} status
+   * @Output なし
+   * */
   async function cb(res, status) {
+
+    // 検索結果が正常に取得できなかった場合はエラーを投げる
     if (status != 'OK' && status != 'ZERO_RESULTS') {
       throw new Error(`status not OK ${status}`)
     }
+    // 検索結果が0件の場合はダイアログを表示して終了
+    if (status == 'ZERO_RESULTS') {
+      return
+    }
+
+    // 検索結果が1件以上の場合はマーカーを作成する
     const placeIdList = res.map((place) => place.place_id)
     const parkInfo = await getIconInfoList(placeIdList)
     resGlobal = await res
@@ -112,9 +126,21 @@ function App() {
     })
     return
   }
-  //マーカーを作成する
+  /**
+   * @description マーカーを作成する
+   * @Input place 検索結果 parkInfo 駐車場情報 visible 表示するかどうか
+   * @param {google.maps.places.PlaceResult} place
+   * @param {Object} parkInfo
+   * @param {boolean} visible
+   * @Output なし
+   * */
+  
   function createMarker(place, parkInfo, visible) {
-    if (!place.geometry || !place.geometry.location) return
+    //　場所のジオメトリ情報および位置情報がない場合は処理を終了する
+    if (!place.geometry || !place.geometry.location) {
+      return
+    }
+    
     // お店情報マーカー
     const marker = new google.maps.Marker({
       map: Map,
@@ -122,19 +148,22 @@ function App() {
       title: place.place_id,
       optimized: false,
       visible: parkInfo.carNum != '0' && parkInfo.carNum != null,
-      label:
-        parkInfo.carNum == null
-          ? '情報無し'
-          : parkInfo.carNum + '台' + (parkInfo.carNum == '10' ? '以上' : ''),
-      //labelAnchor: new google.maps.Point(38, 0), //ラベル文字の基点
+      label:{
+        className: "markerLabel",
+        text:place.name.length > 8 ? place.name.slice(0, 8)+"...":place.name,
+      },
       icon: {
         url: `https://maps.google.com/mapfiles/kml/paddle/${
           parkInfo.carNum == null
-            ? 'wht'
+            ? 'wht-blank.png'
             : parkInfo.carNum == '0'
-              ? 'red'
-              : 'blu'
-        }-blank.png`,
+              ? 'blu-blank.png'
+              : parseInt(parkInfo.carNum) >= 10
+                ? '10.png'
+                : parseInt(parkInfo.carNum) > 0
+                ? parkInfo.carNum +'.png'
+                : 'blu-blank.png'
+        }`,
         scaledSize: new google.maps.Size(60, 60), //マーカーのサイズを縮小
       },
     })

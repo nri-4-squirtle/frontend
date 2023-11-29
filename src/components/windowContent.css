@@ -68,6 +68,12 @@
   margin-bottom: 1px;
 }
 
+.review-date {
+  margin-top: 0px;
+  font-size: 8px;
+  margin-bottom: 2px;
+}
+
 .review-rating {
   color: #ef6c00;
   font-size: 4px;

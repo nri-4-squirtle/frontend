@@ -15,8 +15,21 @@ const InfoWindowContent = ({ place, parkInfo }) => {
     parkInfo.reputations == null
       ? ''
       : parkInfo.reputations.map((item) => item.text + '<br/>')
-  // ↓サンプルデータ
-  // parkInfo.reputations = ['駐車場が狭くて入りずらかったです', '3台止められます']
+
+  function formatDateToYYYYMMDD(dateString) {
+    const date = new Date(dateString)
+    const year = date.getFullYear()
+    const month = ('0' + (date.getMonth() + 1)).slice(-2)
+    const day = ('0' + date.getDate()).slice(-2)
+
+    return `${year}/${month}/${day}`
+  }
+
+  const formattedDate = formatDateToYYYYMMDD(
+    parkInfo.reputations[parkInfo.reputations.length - 1].dt
+  )
+  console.log(parkInfo.reputations[parkInfo.reputations.length - 1].dt)
+  console.log(formattedDate)
   return (
     <div className="store-info">
       {place.photos && place.photos.length > 0 && (
@@ -44,13 +57,19 @@ const InfoWindowContent = ({ place, parkInfo }) => {
 
       <div id="top-reviews">
         <h2 className="review-title">最新の口コミ</h2>
-        {parkInfo.reputations.length > 0 && (
-          <div className="review">
-            <p className="review-text">
-              {parkInfo.reputations[parkInfo.reputations.length - 1].text}
-            </p>
-          </div>
-        )}
+        {parkInfo.reputations
+          .filter((element) => element.text)
+          .slice(-3)
+          .map((element) => {
+            return (
+              <div className="review">
+                <p className="review-text">{element.text}</p>
+                <p className="review-date">
+                  {formatDateToYYYYMMDD(element.dt)}
+                </p>
+              </div>
+            )
+          })}
       </div>
 
       <button id="button" className="display-post-button" type="submit">

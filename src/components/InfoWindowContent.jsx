@@ -15,7 +15,6 @@ const InfoWindowContent = ({ place, parkInfo }) => {
     parkInfo.reputations == null
       ? ''
       : parkInfo.reputations.map((item) => item.text + '<br/>')
-  console.log(parkInfo.reputations)
   function formatDateToYYYYMMDD(dateString) {
     const date = new Date(dateString)
     const year = date.getFullYear()

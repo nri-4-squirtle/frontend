@@ -298,6 +298,7 @@ function App() {
   }
   //現在地の情報を取得する
   function setLatLng() {
+    
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -305,11 +306,13 @@ function App() {
           setLongitude(position.coords.longitude)
         },
         () => {
-          handleLocationError(true, infoWindows, Map.getCenter())
+          setLatitude(35.681236)
+          setLongitude(139.767125)
         }
       )
     } else {
-      handleLocationError(false, infoWindows, Map.getCenter())
+      setLatitude(35.681236)
+      setLongitude(139.767125)
     }
   }
 

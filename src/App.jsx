@@ -56,6 +56,17 @@ function App() {
     // ここにAPIキーを入力します。今回は.envに保存しています。
     libraries,
   })
+
+  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(
+      browserHasGeolocation
+        ? "Error: The Geolocation service failed."
+        : "Error: Your browser doesn't support geolocation."
+    );
+    infoWindow.open(map);
+  }
+
   function updateCurrentPosition() {
     // //TODO:現在地の緯度経度を再設定する
     setLatLng()

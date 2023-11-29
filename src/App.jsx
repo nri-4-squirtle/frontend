@@ -52,10 +52,21 @@ function App() {
   //API読み込み後に再レンダーを引き起こさないため、useStateを使わず、useRefとuseCallbackを使っています。
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: '',
+    googleMapsApiKey: import.meta.env.VITE_googleMapsApiKey,
     // ここにAPIキーを入力します。今回は.envに保存しています。
     libraries,
   })
+
+  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos)
+    infoWindow.setContent(
+      browserHasGeolocation
+        ? 'Error: The Geolocation service failed.'
+        : "Error: Your browser doesn't support geolocation."
+    )
+    infoWindow.open(Map)
+  }
+
   function updateCurrentPosition() {
     // //TODO:現在地の緯度経度を再設定する
     setLatLng()
@@ -289,6 +300,7 @@ function App() {
   }
   //現在地の情報を取得する
   function setLatLng() {
+    
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -296,11 +308,13 @@ function App() {
           setLongitude(position.coords.longitude)
         },
         () => {
-          handleLocationError(true, infoWindow, map.getCenter())
+          setLatitude(35.681236)
+          setLongitude(139.767125)
         }
       )
     } else {
-      handleLocationError(false, infoWindow, map.getCenter())
+      setLatitude(35.681236)
+      setLongitude(139.767125)
     }
   }
 

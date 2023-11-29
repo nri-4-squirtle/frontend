@@ -122,6 +122,7 @@ function App() {
       Map.setOptions({ streetViewControl: false })
       Map.setOptions({ zoomControl: false })
 
+      /*右下のボタンが動くバグがあるので見せない。
       const reloadButtonDiv = document.createElement('div')
       const reloadRoot = createRoot(reloadButtonDiv)
       reloadRoot.render(
@@ -133,6 +134,7 @@ function App() {
         />
       )
       Map.controls[google.maps.ControlPosition.TOP_CENTER].push(reloadButtonDiv) //リロードするボタンを追加
+      */
 
       const switchButtonDiv = document.createElement('div')
       const switchRoot = createRoot(switchButtonDiv)

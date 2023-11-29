@@ -52,13 +52,13 @@ function App() {
   //API読み込み後に再レンダーを引き起こさないため、useStateを使わず、useRefとuseCallbackを使っています。
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyBU7KmTSPlbxoqjDzbV05MmZsohzeLPMBM',
+    googleMapsApiKey: '',
     // ここにAPIキーを入力します。今回は.envに保存しています。
     libraries,
   })
   function updateCurrentPosition() {
     // //TODO:現在地の緯度経度を再設定する
-    setLatLng();
+    setLatLng()
     // 既存のマーカーを削除する
     currentMarker.setMap(null)
 
@@ -67,9 +67,9 @@ function App() {
       icon: currentIconObj,
       position: { lat: latitude, lng: longitude },
       Map,
-      })
+    })
     //現在地を中心に表示する
-    Map.setCenter(currentPosition);
+    Map.setCenter(currentPosition)
   }
 
   // マップを生成する
@@ -93,23 +93,23 @@ function App() {
       })
       //現在地を示すマーカーを作成する
       currentMarker = new google.maps.Marker({
-        icon: currentIconObj={
+        icon: (currentIconObj = {
           fillColor: '#115EC3', //塗り潰し色
           fillOpacity: 0.8, //塗り潰し透過率
           path: google.maps.SymbolPath.CIRCLE, //円を指定
           scale: 10, //円のサイズ
           strokeColor: '#FFFFFF', //枠の色
           strokeWeight: 3,
-        },
+        }),
         position: { lat: lat, lng: lng },
         Map,
       })
 
       // 画面表示の編集（不要なGoogleMapのボタンを非表示、ボタンの追加
-      Map.setOptions({ mapTypeControl: false });
-      Map.setOptions({ fullscreenControl: false });
-      Map.setOptions({ streetViewControl: false });
-      Map.setOptions({ zoomControl: false });
+      Map.setOptions({ mapTypeControl: false })
+      Map.setOptions({ fullscreenControl: false })
+      Map.setOptions({ streetViewControl: false })
+      Map.setOptions({ zoomControl: false })
 
       const reloadButtonDiv = document.createElement('div')
       const reloadRoot = createRoot(reloadButtonDiv)
@@ -123,26 +123,31 @@ function App() {
       )
       Map.controls[google.maps.ControlPosition.TOP_CENTER].push(reloadButtonDiv) //リロードするボタンを追加
 
-      const switchButtonDiv = document.createElement("div");
-      const switchRoot = createRoot(switchButtonDiv);
+      const switchButtonDiv = document.createElement('div')
+      const switchRoot = createRoot(switchButtonDiv)
       switchRoot.render(
-        <SwitchButton 
+        <SwitchButton
           showAllRest={showAllRest}
           setShowAllRest={setShowAllRest}
-          />);
-      Map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(switchButtonDiv);      //表示するマーカーを切り替えるボタンを追加
+        />
+      )
+      Map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(
+        switchButtonDiv
+      ) //表示するマーカーを切り替えるボタンを追加
 
-      const currentFocusButtonDiv = document.createElement("div");
-      const currentFocusRoot = createRoot(currentFocusButtonDiv);
-      currentFocusRoot.render(<CurrentFocusButton updateCurrentPosition={updateCurrentPosition}/>);
-      Map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(currentFocusButtonDiv);      //現在地を中心に再表示するボタンを追加
-
+      const currentFocusButtonDiv = document.createElement('div')
+      const currentFocusRoot = createRoot(currentFocusButtonDiv)
+      currentFocusRoot.render(
+        <CurrentFocusButton updateCurrentPosition={updateCurrentPosition} />
+      )
+      Map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
+        currentFocusButtonDiv
+      ) //現在地を中心に再表示するボタンを追加
     } catch (error) {
       alert('Map生成処理でエラーが発生しました！')
       throw error
     }
   }
-
 
   //近くの飲食店の情報を取得する
   function getNearFood(lat, lng) {
@@ -304,7 +309,7 @@ function App() {
   //近くの飲食店の情報を取得し、マーカーを立てる
   useEffect(() => {
     // TODO : ここで map id 要素が null でなくなるのを待つ.
-    setTimeout(() =>{
+    setTimeout(() => {
       createMap(latitude, longitude)
     }, 1000)
     setTimeout(() => {
@@ -314,7 +319,7 @@ function App() {
 
   useEffect(() => {
     switchShowMarker(showAllRest)
-  },[showAllRest])
+  }, [showAllRest])
 
   if (loadError) return <div>Error</div>
   if (!isLoaded) return <div>Loading</div>

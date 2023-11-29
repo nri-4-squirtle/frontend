@@ -27,9 +27,12 @@ const mapContainerStyle = {
 
 let Map
 let infoWindows
+let currentMarker
 let resGlobal
 let parkInfoGlobal
+let currentPosition
 let markerList = []
+let currentIconObj
 
 function App() {
   const [latitude, setLatitude] = useState(100)
@@ -53,21 +56,24 @@ function App() {
     // ここにAPIキーを入力します。今回は.envに保存しています。
     libraries,
   })
+  function updateCurrentPosition() {
+    // //TODO:現在地の緯度経度を再設定する
+    setLatLng();
+    // 既存のマーカーを削除する
+    currentMarker.setMap(null)
 
-  // 口コミなしのマーカーの表示を切り替える
-  function switchShowMarker(showAllRest) {
-    markerList.forEach((marker) => {
-      marker.setVisible(
-        showAllRest
-          ? parkInfoGlobal[marker.getTitle()].carNum != '0' &&
-              parkInfoGlobal[marker.getTitle()].carNum != null
-          : true
-      )
-    })
+    //現在地を示すマーカーを作成する
+    currentMarker = new google.maps.Marker({
+      icon: currentIconObj,
+      position: { lat: latitude, lng: longitude },
+      Map,
+      })
+    //現在地を中心に表示する
+    Map.setCenter(currentPosition);
   }
 
-  //近くの飲食店の情報を取得する
-  function getNearFood(lat, lng) {
+  // マップを生成する
+  function createMap(lat, lng) {
     try {
       if (
         document.getElementById('map') == null ||
@@ -76,7 +82,7 @@ function App() {
         return
       }
       //現在地の緯度経度を設定する
-      var currentPosition = new google.maps.LatLng(
+      currentPosition = new google.maps.LatLng(
         parseFloat(lat.toString()),
         parseFloat(lng.toString())
       )
@@ -86,8 +92,8 @@ function App() {
         zoom: 18,
       })
       //現在地を示すマーカーを作成する
-      new google.maps.Marker({
-        icon: {
+      currentMarker = new google.maps.Marker({
+        icon: currentIconObj={
           fillColor: '#115EC3', //塗り潰し色
           fillOpacity: 0.8, //塗り潰し透過率
           path: google.maps.SymbolPath.CIRCLE, //円を指定
@@ -99,39 +105,12 @@ function App() {
         Map,
       })
 
-      //検索条件（近くの飲食店）を設定する
-      var request = {
-        location: currentPosition,
-        radius: 500,
-        type: 'restaurant',
-      }
-
-      //検索に必要なサービスを作成する
-      var service = new google.maps.places.PlacesService(Map)
-      //近くの飲食店を検索する
-      service.nearbySearch(request, cb)
-
       // 画面表示の編集（不要なGoogleMapのボタンを非表示、ボタンの追加
-      Map.setOptions({ mapTypeControl: false })
-      Map.setOptions({ fullscreenControl: false })
-      Map.setOptions({ streetViewControl: false })
-      Map.setOptions({ zoomControl: false })
+      Map.setOptions({ mapTypeControl: false });
+      Map.setOptions({ fullscreenControl: false });
+      Map.setOptions({ streetViewControl: false });
+      Map.setOptions({ zoomControl: false });
 
-      // Create SwitchButton and CurrentFocusButton
-      const switchButtonDiv = document.createElement('div')
-      const switchRoot = createRoot(switchButtonDiv)
-      switchRoot.render(
-        <SwitchButton
-          switchShowMarker={switchShowMarker}
-          showAllRest={showAllRest}
-          changeShowState={(isState) => setShowAllRest(isState)}
-        />
-      )
-      Map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(
-        switchButtonDiv
-      ) //現在地を示すマーカーを作成する
-
-      // Create SwitchButton and CurrentFocusButton
       const reloadButtonDiv = document.createElement('div')
       const reloadRoot = createRoot(reloadButtonDiv)
       reloadRoot.render(
@@ -142,15 +121,42 @@ function App() {
           longitude={longitude}
         />
       )
+      Map.controls[google.maps.ControlPosition.TOP_CENTER].push(reloadButtonDiv) //リロードするボタンを追加
 
-      Map.controls[google.maps.ControlPosition.TOP_CENTER].push(reloadButtonDiv) //現在地を示すマーカーを作成する
+      const switchButtonDiv = document.createElement("div");
+      const switchRoot = createRoot(switchButtonDiv);
+      switchRoot.render(
+        <SwitchButton 
+          showAllRest={showAllRest}
+          setShowAllRest={setShowAllRest}
+          />);
+      Map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(switchButtonDiv);      //表示するマーカーを切り替えるボタンを追加
 
-      const currentFocusButtonDiv = document.createElement('div')
-      const currentFocusRoot = createRoot(currentFocusButtonDiv)
-      currentFocusRoot.render(<CurrentFocusButton setLatLng={setLatLng} />)
-      Map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
-        currentFocusButtonDiv
-      ) //現在地を示すマーカーを作成する
+      const currentFocusButtonDiv = document.createElement("div");
+      const currentFocusRoot = createRoot(currentFocusButtonDiv);
+      currentFocusRoot.render(<CurrentFocusButton updateCurrentPosition={updateCurrentPosition}/>);
+      Map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(currentFocusButtonDiv);      //現在地を中心に再表示するボタンを追加
+
+    } catch (error) {
+      alert('Map生成処理でエラーが発生しました！')
+      throw error
+    }
+  }
+
+
+  //近くの飲食店の情報を取得する
+  function getNearFood(lat, lng) {
+    try {
+      //検索条件（近くの飲食店）を設定する
+      var request = {
+        location: currentPosition,
+        radius: 500,
+        type: 'restaurant',
+      }
+      //検索に必要なサービスを作成する
+      var service = new google.maps.places.PlacesService(Map)
+      //近くの飲食店を検索する
+      service.nearbySearch(request, cb)
     } catch (error) {
       alert('検索処理でエラーが発生しました！')
       throw error
@@ -263,7 +269,17 @@ function App() {
     })
     markerList.push(marker)
   }
-
+  // 口コミなしのマーカーの表示を切り替える
+  function switchShowMarker(showAllRest) {
+    markerList.forEach((marker) => {
+      marker.setVisible(
+        showAllRest
+          ? parkInfoGlobal[marker.getTitle()].carNum != '0' &&
+              parkInfoGlobal[marker.getTitle()].carNum != null
+          : true
+      )
+    })
+  }
   //現在地の情報を取得する
   function setLatLng() {
     if (navigator.geolocation) {
@@ -288,10 +304,17 @@ function App() {
   //近くの飲食店の情報を取得し、マーカーを立てる
   useEffect(() => {
     // TODO : ここで map id 要素が null でなくなるのを待つ.
+    setTimeout(() =>{
+      createMap(latitude, longitude)
+    }, 1000)
     setTimeout(() => {
       getNearFood(latitude, longitude)
     }, 1000)
   }, [latitude])
+
+  useEffect(() => {
+    switchShowMarker(showAllRest)
+  },[showAllRest])
 
   if (loadError) return <div>Error</div>
   if (!isLoaded) return <div>Loading</div>

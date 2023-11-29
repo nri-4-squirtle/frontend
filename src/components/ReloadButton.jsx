@@ -1,6 +1,6 @@
 import Fab from '@mui/material/Fab'
-import SwitchLeftIcon from '@mui/icons-material/SwitchLeft'
-import Button from '@mui/material/Button'
+import SearchIcon from '@mui/icons-material/Search';
+
 // ...
 const ReloadButton = (props) => {
   const setLatLng = props.setLatLng
@@ -9,21 +9,18 @@ const ReloadButton = (props) => {
   const longitude = props.longitude
 
   return (
-    <Button
-      variant="contained"
-      sx={{
-        marginLeft: '10px',
-        bgcolor: 'orange',
-        '&:hover': { bgcolor: 'orange' },
-      }}
-      onClick={() => {
-        setLatLng()
-        getNearFood(latitude, longitude)
-      }}
-    >
-      検索
-    </Button>
+    <Fab aria-label="Reload" 
+         variant="extended"
+         sx={{bgcolor:'orange', "&:hover": {bgcolor: "orange",}}}
+         onClick={() => {
+          //setLatLng()
+          //getNearFood(latitude, longitude)
+        }}>
+      <SearchIcon sx={{ mr: 1 }} />
+      現在地で再検索
+    </Fab>
   )
+
 }
 
 export default ReloadButton

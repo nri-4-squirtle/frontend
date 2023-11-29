@@ -10,13 +10,22 @@
 .store-parknum {
   color: #ef6c00;
   font-size: 1rem;
-  margin: 0px;
+  margin: 0px 5px 0px 0px;
+  display: inline-block;
+}
+
+.store-parknum::after {
+  content: '|'; /* パイプ(|)を追加して区切りを表示 */
+  color: #ddd; /* 区切りの色 */
+  margin-left: 5px;
 }
 
 .store-review {
-  color: #666;
-  font-size: 1rem;
+  color: #2677f1;
+  font-size: 0.8rem;
   margin: 0px;
+  display: inline-block;
+  font-weight: bold;
 }
 
 .display-post-button {

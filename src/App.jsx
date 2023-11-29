@@ -52,19 +52,19 @@ function App() {
   //API読み込み後に再レンダーを引き起こさないため、useStateを使わず、useRefとuseCallbackを使っています。
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: '',
+    googleMapsApiKey: import.meta.env.VITE_googleMapsApiKey,
     // ここにAPIキーを入力します。今回は.envに保存しています。
     libraries,
   })
 
   function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-    infoWindow.setPosition(pos);
+    infoWindow.setPosition(pos)
     infoWindow.setContent(
       browserHasGeolocation
-        ? "Error: The Geolocation service failed."
+        ? 'Error: The Geolocation service failed.'
         : "Error: Your browser doesn't support geolocation."
-    );
-    infoWindow.open(map);
+    )
+    infoWindow.open(map)
   }
 
   function updateCurrentPosition() {

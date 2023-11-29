@@ -43,6 +43,8 @@ const ModalComponent = ({ isOpen, onClose, curentClickedPlace }) => {
     })
     const data = await res.json()
 
+    setParkingCount('')
+    setParkingReview('')
     // モーダルを閉じる
     setOpen(false)
     onClose()

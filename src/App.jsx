@@ -64,7 +64,7 @@ function App() {
         ? 'Error: The Geolocation service failed.'
         : "Error: Your browser doesn't support geolocation."
     )
-    infoWindow.open(map)
+    infoWindow.open(Map)
   }
 
   function updateCurrentPosition() {

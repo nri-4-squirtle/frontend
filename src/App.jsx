@@ -14,8 +14,8 @@ import Header from './components/Header'
 import SwitchButton from './components/SwitchButton'
 import CurrentFocusButton from './components/CurrentFocusButton'
 
-import Modal from 'react-modal'
 import ModalComponent from './components/ModalComponent'
+import CircularProgress from '@mui/material/CircularProgress'
 
 // TODO : Performance warning
 const libraries = ['places']
@@ -36,6 +36,7 @@ function App() {
   const [showAllRest, setShowAllRest] = useState(false)
   const [detailVisible, setDetailVisible] = useState(false)
   const [curentClickedPlace, setCurentClickedPlace] = useState('')
+  const [preparing, setPreparing] = useState(true)
 
   const handleDetailVisible = () => {
     setDetailVisible(false)
@@ -111,27 +112,31 @@ function App() {
       service.nearbySearch(request, cb)
 
       // 画面表示の編集（不要なGoogleMapのボタンを非表示、ボタンの追加
-      Map.setOptions({ mapTypeControl: false });
-      Map.setOptions({ fullscreenControl: false });
-      Map.setOptions({ streetViewControl: false });
-      Map.setOptions({ zoomControl: false });
+      Map.setOptions({ mapTypeControl: false })
+      Map.setOptions({ fullscreenControl: false })
+      Map.setOptions({ streetViewControl: false })
+      Map.setOptions({ zoomControl: false })
 
       // Create SwitchButton and CurrentFocusButton
-      const switchButtonDiv = document.createElement("div");
-      const switchRoot = createRoot(switchButtonDiv);
+      const switchButtonDiv = document.createElement('div')
+      const switchRoot = createRoot(switchButtonDiv)
       switchRoot.render(
-        <SwitchButton 
+        <SwitchButton
           switchShowMarker={switchShowMarker}
           showAllRest={showAllRest}
           changeShowState={(isState) => setShowAllRest(isState)}
-          />);
-      Map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(switchButtonDiv);      //現在地を示すマーカーを作成する
+        />
+      )
+      Map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(
+        switchButtonDiv
+      ) //現在地を示すマーカーを作成する
 
-      const currentFocusButtonDiv = document.createElement("div");
-      const currentFocusRoot = createRoot(currentFocusButtonDiv);
-      currentFocusRoot.render(<CurrentFocusButton setLatLng={setLatLng}/>);
-      Map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(currentFocusButtonDiv);      //現在地を示すマーカーを作成する
-
+      const currentFocusButtonDiv = document.createElement('div')
+      const currentFocusRoot = createRoot(currentFocusButtonDiv)
+      currentFocusRoot.render(<CurrentFocusButton setLatLng={setLatLng} />)
+      Map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(
+        currentFocusButtonDiv
+      ) //現在地を示すマーカーを作成する
     } catch (error) {
       alert('検索処理でエラーが発生しました！')
       throw error
@@ -189,7 +194,8 @@ function App() {
       visible: parkInfo.carNum != '0' && parkInfo.carNum != null,
       label: {
         className: 'markerLabel',
-        text: place.name.length > 8 ? place.name.slice(0, 8) + '...' : place.name,
+        text:
+          place.name.length > 8 ? place.name.slice(0, 8) + '...' : place.name,
       },
       icon: {
         url: `https://maps.google.com/mapfiles/kml/paddle/${
@@ -270,9 +276,12 @@ function App() {
   //近くの飲食店の情報を取得し、マーカーを立てる
   useEffect(() => {
     // TODO : ここで map id 要素が null でなくなるのを待つ.
+    console.log(preparing)
     setTimeout(() => {
       getNearFood(latitude, longitude)
-    }, 1000)
+    }, 1000),
+      setPreparing(false)
+    console.log(preparing)
   }, [latitude])
 
   if (loadError) return <div>Error</div>
@@ -280,27 +289,45 @@ function App() {
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <div className="header" style={{ flex: '0 0 65px', overflow: 'hidden' }}>
+      <div
+        style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}
+      >
+        <div
+          className="header"
+          style={{ flex: '0 0 65px', overflow: 'hidden' }}
+        >
           <Header />
         </div>
         <div className="googleMap" style={{ flex: '1', overflow: 'auto' }}>
-        <GoogleMap
-          id="map"
-          mapContainerStyle={mapContainerStyle}
-          zoom={18}
-          center={{
-            lat: latitude,
-            lng: longitude,
-          }}
-          onLoad={onMapLoad}
-        ></GoogleMap>
-      </div>
-      <ModalComponent
-        isOpen={detailVisible}
-        curentClickedPlace={curentClickedPlace}
-        onClose={() => handleDetailVisible()}
-      />
+          {preparing ? (
+            <div
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+              }}
+            >
+              <CircularProgress size={100} thickness={1} color="warning" />
+            </div>
+          ) : (
+            <GoogleMap
+              id="map"
+              mapContainerStyle={mapContainerStyle}
+              zoom={18}
+              center={{
+                lat: latitude,
+                lng: longitude,
+              }}
+              onLoad={onMapLoad}
+            ></GoogleMap>
+          )}
+        </div>
+        <ModalComponent
+          isOpen={detailVisible}
+          curentClickedPlace={curentClickedPlace}
+          onClose={() => handleDetailVisible()}
+        />
       </div>
     </>
   )

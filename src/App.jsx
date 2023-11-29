@@ -252,7 +252,7 @@ function App() {
     })
 
     infoWindows = new google.maps.InfoWindow({
-      maxWidth: 300,
+      MaxWidth: 250,
     })
 
     let content

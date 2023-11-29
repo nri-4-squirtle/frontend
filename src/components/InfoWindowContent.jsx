@@ -35,13 +35,13 @@ const InfoWindowContent = ({ place, parkInfo }) => {
       {place.photos && place.photos.length > 0 && (
         <p>
           <img
-            style={{ maxWidth: '17rem' }}
+            style={{ width: '220px', height: '150px' }}
+            className="store-image"
             src={place.photos[0].getUrl()}
             alt={place.name}
           />
         </p>
       )}
-
       <h3 className="store-name">{place.name}</h3>
 
       <p className="store-parknum">

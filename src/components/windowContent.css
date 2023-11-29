@@ -1,6 +1,10 @@
 .store-info {
   text-align: center;
 }
+
+.store-image {
+  object-fit: cover;
+}
 .store-name {
   color: black;
   font-size: 1rem;

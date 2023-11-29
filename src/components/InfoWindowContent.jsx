@@ -15,7 +15,6 @@ const InfoWindowContent = ({ place, parkInfo }) => {
     parkInfo.reputations == null
       ? ''
       : parkInfo.reputations.map((item) => item.text + '<br/>')
-
   function formatDateToYYYYMMDD(dateString) {
     const date = new Date(dateString)
     const year = date.getFullYear()
@@ -25,11 +24,6 @@ const InfoWindowContent = ({ place, parkInfo }) => {
     return `${year}/${month}/${day}`
   }
 
-  const formattedDate = formatDateToYYYYMMDD(
-    parkInfo.reputations[parkInfo.reputations.length - 1].dt
-  )
-  console.log(parkInfo.reputations[parkInfo.reputations.length - 1].dt)
-  console.log(formattedDate)
   return (
     <div className="store-info">
       {place.photos && place.photos.length > 0 && (

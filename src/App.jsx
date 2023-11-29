@@ -52,7 +52,8 @@ function App() {
   //API読み込み後に再レンダーを引き起こさないため、useStateを使わず、useRefとuseCallbackを使っています。
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_googleMapsApiKey,
+    //googleMapsApiKey: import.meta.env.VITE_googleMapsApiKey,
+    googleMapsApiKey: 'AIzaSyBbvJqceYZLLKsqdroLXGg2Rm1So1yN5_w',
     // ここにAPIキーを入力します。今回は.envに保存しています。
     libraries,
   })
@@ -305,11 +306,11 @@ function App() {
           setLongitude(position.coords.longitude)
         },
         () => {
-          handleLocationError(true, infoWindows, map.getCenter())
+          handleLocationError(true, infoWindows, Map.getCenter())
         }
       )
     } else {
-      handleLocationError(false, infoWindows, map.getCenter())
+      handleLocationError(false, infoWindows, Map.getCenter())
     }
   }
 

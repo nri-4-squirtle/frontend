@@ -10,7 +10,7 @@ const CurrentFocusButton = (props) => {
                bgcolor:'orange', 
                "&:hover": {bgcolor: "orange",}}} 
           onClick={() => {
-            props.setLatLng()
+            props.updateCurrentPosition()
           }}>
         <NavigationIcon sx={{bgcolor:'orange'}}/>
     </Fab>

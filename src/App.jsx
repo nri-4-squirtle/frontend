@@ -305,11 +305,11 @@ function App() {
           setLongitude(position.coords.longitude)
         },
         () => {
-          handleLocationError(true, infoWindows, map.getCenter())
+          handleLocationError(true, infoWindows, Map.getCenter())
         }
       )
     } else {
-      handleLocationError(false, infoWindows, map.getCenter())
+      handleLocationError(false, infoWindows, Map.getCenter())
     }
   }
 

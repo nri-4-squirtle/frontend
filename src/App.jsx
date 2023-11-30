@@ -52,7 +52,7 @@ function App() {
   //API読み込み後に再レンダーを引き起こさないため、useStateを使わず、useRefとuseCallbackを使っています。
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_googleMapsApiKey,
+    googleMapsApiKey: '',
     // ここにAPIキーを入力します。今回は.envに保存しています。
     libraries,
   })
@@ -298,7 +298,6 @@ function App() {
   }
   //現在地の情報を取得する
   function setLatLng() {
-    
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {

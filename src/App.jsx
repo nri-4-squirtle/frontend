@@ -21,7 +21,7 @@ import ModalComponent from './components/ModalComponent'
 // TODO : Performance warning
 const libraries = ['places']
 const mapContainerStyle = {
-  height: '90vh',
+  height: '80vh',
   width: '100%',
 }
 
@@ -300,7 +300,6 @@ function App() {
   }
   //現在地の情報を取得する
   function setLatLng() {
-    
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
